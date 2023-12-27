@@ -6,18 +6,13 @@
 
 #include "array_alloc.h"
 
-int L;
-int i ;
-int j;
-int k;
-
-double J= 1;
-const double kb= 1.;
 
 
 
-FILE *fp;
-char* FILENAME = "Ising_data.csv";
+
+
+
+
 
 
 void write_array(char* filename,double * array ,int arraylength){
@@ -32,6 +27,7 @@ void write_array(char* filename,double * array ,int arraylength){
       double* array : array that will be written
       int arraylength: length of array to be written
   */
+  FILE * fp;
 
   //open and find end of file
   fp = fopen(filename, "r+");
@@ -62,7 +58,7 @@ void write_2darray(char* filename,int ** array ,int dim1, int dim2)
       double* array : array that will be written
       int arraylength: length of array to be written
     */
-
+    FILE * fp;
     //open and find end of file
     fp = fopen(filename, "r+");
     fseek(fp,0, SEEK_END);
@@ -139,7 +135,10 @@ double sum_neighbours( int**M, int r1,int r2, int L){
 
 void monte_carlo_step(int L, int**M, double T)
 {
+    int kb=1;
+    int J=1;
     int i=0;
+
     double beta= 1/(kb*T);
 
     for (i=0;i< L*L; i++)
@@ -202,7 +201,7 @@ double calculate_energy_per_spin(int**M, int L)
     return (sum_over_all_spins/(L*L)); 
 }
 
-
+/*
 int main()
 {   
     fp= fopen( FILENAME,"w");
@@ -305,7 +304,7 @@ int main()
 
     free_imatrix(M_medium);
     
-    printf("DOne medium system");
+    printf("Done medium system");
 //************SIMULATION FOR L = 100 and the 3 Different Temperatures*********************
 
     L = 100;
@@ -348,3 +347,4 @@ int main()
 
     
 }
+*/
