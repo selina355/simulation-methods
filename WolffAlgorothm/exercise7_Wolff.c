@@ -108,7 +108,8 @@ int main()
     double Tl=0.5*Tc;
     double Th= 2*Tc;
 
-    double * clustersizes=(double*)dvector(0,N-1);
+    double * clustersizes;
+    clustersizes=(double*)dvector(0,N-1);
     
     for (i=0;i<N;i++){
         clustersizes[i]=wolff_monte_carlo_step(L,M,Tl);
@@ -141,27 +142,53 @@ int main()
     free_dvector(clustersizes,0,N-1);
     free_imatrix(M);
     
-    int Ls[7] ={5,10,15,25,50,75,100};
+    int Ls[7] ={50,65,80,95,110,135};
 
     N=10000;
-    clustersizes=  (double*)dvector(0,N-1);
+
+    double * clustersizes_corr;
     double * Magnetisations=(double*)dvector(0,N-1);
+    double * Magnetisations_Metropolis=(double*)dvector(0,N-1);
     int**Ms;
-    for( i =0;i<7;i++){
+    int**Mm;
+
+    for( i =0;i<6;i++){
+        clustersizes_corr= (double*)dvector(0,N-1);
         Ms=(int **)imatrix(0,Ls[i]-1,0,Ls[i]-1);
         Ms=initial_system(Ls[i],Ms);
         for (j=0;j<N;j++)
         {
-        clustersizes[j]=wolff_monte_carlo_step(Ls[i],Ms,Tc);
+        clustersizes_corr[j]=wolff_monte_carlo_step(Ls[i],Ms,Tc);
         Magnetisations[j]= calculate_magnetisation_per_spin(Ms,Ls[i]);
 
         }
+        write_array("exercise7_other.csv",clustersizes_corr,N-1);
+        printf("wrote cluster size");
         write_array("exercise7_other.csv",Magnetisations,N);
+        printf("wrote magnetisation");
+        free_dvector(clustersizes_corr,0,N-1);
         free_imatrix(Ms);
 
     }
-    free_dvector(clustersizes,0,N-1);
+    for( i =0;i<6;i++){
+        Mm=(int **)imatrix(0,Ls[i]-1,0,Ls[i]-1);
+        Mm=initial_system(Ls[i],Mm);
+        for (j=0;j<N;j++)
+        {
+        monte_carlo_step(Ls[i],Mm,Tc);
+        Magnetisations_Metropolis[j]= calculate_magnetisation_per_spin(Mm,Ls[i]);
+
+        }
+        write_array("exercise7_other.csv",Magnetisations_Metropolis,N);
+        printf("wrote metropolis");
+        free_imatrix(Mm);
+
+    }
+    
+    
     free_dvector(Magnetisations,0,N-1);
+    free_dvector(Magnetisations_Metropolis,0,N-1);
+
     
 
         
