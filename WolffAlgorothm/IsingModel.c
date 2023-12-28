@@ -84,11 +84,11 @@ void write_2darray(char* filename,int ** array ,int dim1, int dim2)
 }
 
 
-int** initial_system(int L){
-    int **M;
+int** initial_system(int L, int **M){
+    
     int i=0;
     int j=0;
-    M = (int **)imatrix(0,L-1,0,L-1);
+    
     for(i=0;i<L;i++)
     {
         for(j=0;j<L;j++)
