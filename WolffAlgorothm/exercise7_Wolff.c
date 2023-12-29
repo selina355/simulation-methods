@@ -189,6 +189,10 @@ int main()
     free_dvector(Magnetisations,0,N-1);
     free_dvector(Magnetisations_Metropolis,0,N-1);
 
+    //***********************Multilple Monte carlo simulation*********************************
+    
+    
+
     
 
         
