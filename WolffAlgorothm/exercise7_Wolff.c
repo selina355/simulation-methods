@@ -88,25 +88,44 @@ int wolff_monte_carlo_step(int L, int**M, double T){
 
 }
 
+int try_swapp_MMC(double E1,double E2,double T1, double T2){
+
+    double metropolis_factor= exp( (1/T2-1/T1)*(E2-E1));
+    if (metropolis_factor>=1){
+        return 1;
+    }
+    else{
+        if (drand48()<=metropolis_factor){
+            return 1;
+        }
+        return 0;
+    }
+
+    return 
+
+}
+
 
 int main()
 {   
+
+    srand48((unsigned)time(NULL));
+
+    L= 50;
+
+    int N= 40000;
+    double Tl=0.5*Tc;
+    double Th= 2*Tc;
+    /*
     fp= fopen( "exercise7_sim_animation.csv","w");
     //write header to file
     fprintf(fp, "frames of simulation\n ");
     fclose(fp);
     fp= fopen( "exercise7_other.csv","w");
     fclose(fp);
-
-    srand48((unsigned)time(NULL));
-
-    L= 50;
     int**M= (int **)imatrix(0,L-1,0,L-1);
     M= initial_system(L,M);
-    int N= 40000;
-
-    double Tl=0.5*Tc;
-    double Th= 2*Tc;
+    
 
     double * clustersizes;
     clustersizes=(double*)dvector(0,N-1);
@@ -189,8 +208,51 @@ int main()
     free_dvector(Magnetisations,0,N-1);
     free_dvector(Magnetisations_Metropolis,0,N-1);
 
+    */
     //***********************Multilple Monte carlo simulation*********************************
+    double  temperatures[9]= {1.2, 1.4, 1.7,2.0, 2.3,2.6,2.9,3.2,3.5};
+    N=100;
+    L=30;
+    int***all_systems= imatrix3(9,L,L);
+    double** energies_all= dmatrix(0,8,0,N);
+    int swap_counter=0;
     
+    for (i=0;i<N;i++){
+
+        for (j=0;j<9;j++){
+            monte_carlo_step(L,all_systems[j],temperatures[j]);
+            energies_all[j][i]=calculate_energy_per_spin(all_systems[j],L);   
+        }
+        for(j=0;j<8;j++){
+            if(try_swapp_MMC(energies_all[j][i],energies_all[j+1][i], temperatures[j], temperatures[j+1]) ==1){
+
+
+            }
+        }
+        
+
+    }
+
+    fp= fopen( "exercise7_multipleMC.csv","w");
+    //write header to file
+    fprintf(fp, "Energies of chains at  T= {1.2, 1.4, 1.7,2.0, 2.3,2.6,2.9,3.2,3.5};\n ");
+    fclose(fp);
+    for (j=0;j<9;j++){
+        write_array("exercise7_multipleMC.csv", energies_all[j],N);
+    }
+    
+    
+
+
+    printf("it worked!");
+
+    free_dmatrix(energies_all);
+    free_imatrix3(all_systems);
+
+
+
+
+
     
 
     
