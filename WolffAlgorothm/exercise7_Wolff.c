@@ -101,8 +101,23 @@ int try_swapp_MMC(double E1,double E2,double T1, double T2){
         return 0;
     }
 
-    return 
+    return 0;
 
+}
+void swap_states(int***M_a,int***M_b){
+    int** temp= *M_a;
+    int** temp1= *M_b;
+    **M_a= **M_b;
+    *M_b=temp;
+    //M[b]=*temp0;
+    
+}
+
+
+void swap_order(int * M, int a, int b){
+    int temp = M[a];
+    M[a]= M[b];
+    M[b]=temp;
 }
 
 
@@ -211,27 +226,86 @@ int main()
     */
     //***********************Multilple Monte carlo simulation*********************************
     double  temperatures[9]= {1.2, 1.4, 1.7,2.0, 2.3,2.6,2.9,3.2,3.5};
-    N=100;
-    L=30;
+    int system_order[9] = {0,1,2,3,4,5,6,7,8};
+    N=10;
+    L=10;
     int***all_systems= imatrix3(9,L,L);
-    double** energies_all= dmatrix(0,8,0,N);
-    int swap_counter=0;
-    
-    for (i=0;i<N;i++){
+    double** energies_all= dmatrix(0,8,0,N-1);
 
+    int swap_counter=0;
+    int swap_attempts=0;
+  
+    for (j=0;j<9;j++){
+        all_systems[j]=initial_system(L,all_systems[j]);
+    }
+    printf("before swap 0\n");
+    for(i=0;i<L;i++){
+        for (j=0;j<L;j++){
+            printf("%d ",all_systems[0][i][j]);
+        
+        }
+        printf("\n");
+    }
+    printf("before swap 1\n");
+
+    for(i=0;i<L;i++){
+        for (j=0;j<L;j++){
+            printf("%d ",all_systems[1][i][j]);
+        
+        }
+        printf("\n");
+    }
+    swap_states(&all_systems[0],&all_systems[1]);
+    
+    printf("after swap 0\n");
+
+    for(i=0;i<L;i++){
+        for (j=0;j<L;j++){
+            printf("%d ",all_systems[0][i][j]);
+        
+        }
+        printf("\n");
+    }
+    printf("after swap 1\n");
+
+    for(i=0;i<L;i++){
+        for (j=0;j<L;j++){
+            printf("%d ",all_systems[1][i][j]);
+        
+        }
+        printf("\n");
+    }
+    /*
+    //int *** initial_systems= all_systems;
+    int e;
+    int f;
+    for (i=0;i<N;i++){
         for (j=0;j<9;j++){
             monte_carlo_step(L,all_systems[j],temperatures[j]);
-            energies_all[j][i]=calculate_energy_per_spin(all_systems[j],L);   
+            energies_all[system_order[j]][i]=calculate_energy_per_spin(all_systems[j],L); 
+            //printf(" %f ", energies_all[j][i]) ; 
         }
-        for(j=0;j<8;j++){
+        //printf("\n");
+        
+        for(j=0;j<7;j++){
+            swap_attempts+=1;
             if(try_swapp_MMC(energies_all[j][i],energies_all[j+1][i], temperatures[j], temperatures[j+1]) ==1){
-
-
+                //swap_order(system_order,j,j+1);
+                //swap_states(all_systems, j, j+1);
+                //swap_counter+=1;
             }
         }
         
-
     }
+    
+    for(e=0;e<L;e++){
+        for (f=0;f<L;f++){
+            printf("%d ",all_systems[0][e][f]);
+    
+        }
+        printf("\n");
+    }
+    
 
     fp= fopen( "exercise7_multipleMC.csv","w");
     //write header to file
@@ -240,13 +314,27 @@ int main()
     for (j=0;j<9;j++){
         write_array("exercise7_multipleMC.csv", energies_all[j],N);
     }
-    
-    
+    for(j=0;j<7;j++){
+            swap_attempts+=1;
+            
+            //swap_order(system_order,j+1,j);
+            //swap_states(all_systems, j+1, j);
+            swap_counter+=1;
 
+        }
+    //swap_states(all_systems,8,1);
+    
+    
+    for (j=0;j<9;j++){
+        write_array("exercise7_multipleMC.csv", energies_all[j],N);
+    }
+    
+    */
 
     printf("it worked!");
 
     free_dmatrix(energies_all);
+
     free_imatrix3(all_systems);
 
 
