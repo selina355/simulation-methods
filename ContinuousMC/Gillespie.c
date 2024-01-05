@@ -50,8 +50,8 @@ void gillespie_step_LV(int j,double * times, double * x_var, double * y_var, dou
     w[2] = k[2] *y_curr;
     w[3]=0.;
 
-    for(i=0;i<3;i++){
-        w[3]+=w[i];
+    for(l=0;l<3;l++){
+        w[3]+=w[l];
     }
 
     
@@ -93,19 +93,20 @@ void gillespie_step_Brusselator(int j,double * times, double * x_var, double * y
     double x_curr= x_var[j-1];
     double  y_curr= y_var[j-1];
     double t_curr= times[j-1];
-    double a = 2;
-    double b= 5;
+
+    double a = 2.;
+    double b= 5.;
     double w[5];
     int i,l;
 
     w[0] = a*V;
     w[1] = x_curr;
     w[2] = 1/(V*V)* x_curr*(x_curr-1)*y_curr;
-    w[3]=b*x_curr;
-    w[4]=0.;
+    w[3]= b*x_curr;
+    w[4]= 0.;
 
-    for(i=0;i<4;i++){
-        w[4]+=w[i];
+    for(l=0;l<4;l++){
+        w[4]+=w[l];
     }
 
     
@@ -115,24 +116,24 @@ void gillespie_step_Brusselator(int j,double * times, double * x_var, double * y
     times[j]= t_curr +tau;
    
 
-    if (u<=w[0]){
+    if (u<w[0]){
         x_var[j]= x_curr +1;
     
         y_var[j]= y_curr;
     }
           
-    if((u>w[0]) & (u<=(w[0]+w[1]))){
+    if((u>=w[0]) & (u<(w[0]+w[1]))){
         x_var[j]= x_curr-1;
         y_var[j]= y_curr ;
     }
        
         
-    if((u>(w[0]+w[1])) &(u<= (w[0]+w[1]+w[3]))){
+    if((u>=(w[0]+w[1])) &(u< (w[0]+w[1]+w[2]))){
         x_var[j]= x_curr+1;
         y_var[j]= y_curr-1;
 
     }
-    if((u>(w[0]+w[1]+w[3]))){
+    if((u>(w[0]+w[1]+w[2])) &(u< w[4])){
         x_var[j]= x_curr-1;
         y_var[j]= y_curr+1;
 
@@ -159,10 +160,17 @@ int main()
     fprintf(fp, "times, Lotka x, lotka y\n ");
     fclose(fp);
     
+
+
+    fp= fopen( "exercise_8_B.csv","w");
+    //write header to file
+    fprintf(fp, "times, Lotka x, lotka y\n ");
+    fclose(fp);
+    
     
     srand48((unsigned)time(NULL));
 
-    int N=300000;
+    int N=50000;
     int i=0;
     double *times =(double*)malloc(N * sizeof(double));
     double  *x= (double *)malloc(N * sizeof(double ));
@@ -245,25 +253,37 @@ int main()
     write_array("exercise_8.csv",y,N);
 
  //***************BRUSSELATOR*************
-    x[0]= 100;
-    y[0]=5000;
+    N= 100000;
+    double * timesB =(double*)malloc(N * sizeof(double));
+    double  * xB = (double *)malloc(N * sizeof(double ));
+    double  *yB= (double *)malloc(N * sizeof(double));
+    xB[0]=2200;
+    yB[0]=2200;
 
     times[0]=0.;
     for(i=1;i<N;i++)
     {
-        gillespie_step_Brusselator(i,times,x,y,1000);
+        gillespie_step_Brusselator(i,timesB,xB,yB,1000);
     }
-   
+    
+    printf("%f  ", times[10000]);
+
+    printf("%f", times[20000]);
+
     printf("\n");
-    write_array("exercise_8.csv",times,N);
-    write_array("exercise_8.csv",x,N);
-    write_array("exercise_8.csv",y,N);
+    write_array("exercise_8_B.csv",timesB,N);
+    write_array("exercise_8_B.csv",xB,N);
+    write_array("exercise_8_B.csv",yB,N);
+    
 
 
-
+    
     free(times);
     free(x);
     free(y);
+    free(timesB);
+    free(xB);
+    free(yB);
     return 0;
 
 }
