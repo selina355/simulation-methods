@@ -212,8 +212,8 @@ int main()
 
 
     //*****simulation very far from Fixed point x_0= 500, y_0=50*******
-    x[0]=100.;
-    y[0]=40;
+    x[0]=40.;
+    y[0]=300;
 
 
     for(i=1;i<N;i++)
@@ -228,7 +228,7 @@ int main()
     write_array("exercise_8.csv",y,N);
 
  //changing the rates: 
-    double ks_LV_2[3]={3,0.001,5};
+    double ks_LV_2[3]={5,0.005,5};
     double ks_LV_3[3]= {3,0.01,3};
 
 
@@ -251,39 +251,39 @@ int main()
     write_array("exercise_8.csv",times,N);
     write_array("exercise_8.csv",x,N);
     write_array("exercise_8.csv",y,N);
-
+/*
  //***************BRUSSELATOR*************
-    N= 100000;
+    N= 5000000;
     double * timesB =(double*)malloc(N * sizeof(double));
     double  * xB = (double *)malloc(N * sizeof(double ));
     double  *yB= (double *)malloc(N * sizeof(double));
     xB[0]=2200;
     yB[0]=2200;
+    double volumes[3]={100., 1000. , 10000,};
 
-    times[0]=0.;
-    for(i=1;i<N;i++)
-    {
-        gillespie_step_Brusselator(i,timesB,xB,yB,1000);
+    timesB[0]=0.;
+    int j= 0;
+    for (j=0;j<3;j++){
+        for(i=1;i<N;i++)
+        {
+        gillespie_step_Brusselator(i,timesB,xB,yB,volumes[j]);
+        }
+        printf("\n");
+        write_array("exercise_8_B.csv",timesB,N);
+        write_array("exercise_8_B.csv",xB,N);
+        write_array("exercise_8_B.csv",yB,N);
+        
     }
     
-    printf("%f  ", times[10000]);
-
-    printf("%f", times[20000]);
-
-    printf("\n");
-    write_array("exercise_8_B.csv",timesB,N);
-    write_array("exercise_8_B.csv",xB,N);
-    write_array("exercise_8_B.csv",yB,N);
     
-
-
-    
-    free(times);
-    free(x);
-    free(y);
+   
     free(timesB);
     free(xB);
     free(yB);
+    */
+    free(times);
+    free(x);
+    free(y);
     return 0;
 
 }
