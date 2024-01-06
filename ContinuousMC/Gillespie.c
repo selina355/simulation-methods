@@ -211,7 +211,7 @@ int main()
 
 
 
-    //*****simulation very far from Fixed point x_0= 500, y_0=50*******
+    //*****simulation very far from Fixed point x_0= 40, y_0=300*******
     x[0]=40.;
     y[0]=300;
 
