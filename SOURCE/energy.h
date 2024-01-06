@@ -6,7 +6,7 @@ double compute_energy_somemodel(int i, int j){
     return 0.;
 }
 
-
+//test
 /********************************************************************************************/
 
 double compute_energy_translation(){
