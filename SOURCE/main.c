@@ -12,15 +12,19 @@
 
 int main(int argc, char* argv[] ) //start with command line options. char*argv[] means this is an array of indetermined size of pinters to char, in other words an array of strings.argv is a pointer to string array holding the actual parameters.
 {
+    FILE * f,* g;
+
+    f = fopen("energy.dat","w");
+    g = fopen("configurations_test.dat","w");
+    fclose(f);fclose(g);
 
     read_input_file();
  
     allocate_();    
     //ReadConf();			 
-    //    or
-    //initialize();  
+    initialise_random();  
      
-    //do_MC();
+    do_MC();
     
     // Release memory used by particles, it is not needed anymor
     clean_();

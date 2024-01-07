@@ -7,22 +7,29 @@ void clean_()
 {
     free(parts);
 }
-//my function to  initialise the system
-void initialise_random(){
 
-    for(int i = 0; i < mySys.NPart; i++)
-    {
-        parts[i].ox = ran3(&mySys.seed)%mySys.NPart;
-        parts[i].oy= ran3(&mySys.seed)%mySys.NPart;
-        parts[i].oz = ran3(&mySys.seed)%mySys.NPart;
 
-        ///initialise x y z after boltzman dist
 
-        
+double MinD(double dx, double L){
 
-    }
-
+    double dx1;
+    dx1 = dx - rint(dx/L)*L;
+    return dx1;
 }
+
+double P_Img (double z, double L){
+        
+    double z1;
+    z1 = z - floor(z/L)*L;
+    return z1;
+}
+
+
+
+
+
+
+
 /*
 void ReadConf()
 {
@@ -42,30 +49,15 @@ void ReadConf()
 */
 void WriteConf(char filename[])
 {
-    FILE* fp = fopen(filename, "w"); 
+    FILE* fp = fopen(filename, "a"); 
 
     for(int i = 0; i < mySys.NPart; i++) 
     {
-        fprintf(fp, "%lf %lf %lf\n", parts[i].x, parts[i].y, parts[i].z); 
+        fprintf(fp, "%lf, %lf, %lf,\n", parts[i].x, parts[i].y, parts[i].z); 
     }
     fflush(fp); fclose(fp); // Close file when we're done
 }
 
 
-
-
-double MinD(double dx, double L){
-
-    double dx1;
-    dx1 = dx - rint(dx/L)*L;
-    return dx1;
-}
-
-double P_Img (double z, double L){
-        
-    double z1;
-    z1 = z - floor(z/L)*L;
-    return z1;
-}
 
 
