@@ -1,16 +1,54 @@
 
 #define min(a,b)    ({ __typeof__ (a) _a = (a);  __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
 
-double compute_energy_somemodel(int i, int j){
+double distance_two_particles(long int i, long int j){
+    double distx,disty,distz;
+    double distance;
+    distx= MinD((parts[i].x -parts[j].x), mySys.box_x);
+    disty= MinD((parts[i].y -parts[j].y), mySys.box_y);
+    distz= MinD((parts[i].z -parts[j].z), mySys.box_z);
 
-    return 0.;
+    distance= sqrt(distx*distx +disty*disty +distz*distz);
+    return distance;
+
+}
+double compute_energy_pair_hard_spheres(long int i, long int j){
+    double distance = distance_two_particles(i,j);
+    double en=0;
+    if (distance < mySys.sigma)
+    {
+        en= 100000.;
+        return en;
+    }
+    return en;
 }
 
-//test
+double compute_energy_pair_Lennard_Jones(long int i, long int j){
+    double distance = distance_two_particles(i,j);
+    double en=0;
+    double cut_off = mySys.box_x/2;
+    double density= mySys.NPart/pow(mySys.box_x,3);
+    double ratio= mySys.sigma/distance;
+    double ratio_cut=mySys.sigma/cut_off;
+
+    if (distance < cut_off)
+    {
+        en= 4 * ( pow(ratio,12) - pow(ratio,6));
+
+    }
+    else 
+    {
+        en = 8/3*PI *density*(1/3*pow(ratio_cut,9)-pow(ratio_cut,3));
+    }
+    return en;
+}
+
+
+
 /********************************************************************************************/
 
 double compute_energy_translation(){
-
+    //assumes m=1, t per timestep=1
     long int i;
     double en = 0.;
     double distx,disty,distz;
@@ -34,20 +72,33 @@ double compute_energy_translation(){
 }
 
 
-double compute_energy(){
+double compute_energy()
+{
 
-    int i;
+    long int i;
     double en = 0.;
+    
     //long int index;
     //ong int ix, iy, iz;
-    //ong int j;
+    long int j;
 
     en += compute_energy_translation();
 
 
-    for(i = 0; i< mySys.NPart; i++){
+    for(i = 0; i< mySys.NPart; i++)
+    {
+        for (j=i;j<mySys.NPart;j++)
+        {
+            if(mySys.model ==1)
+            {
+                en += compute_energy_pair_hard_spheres(i,j);
+            }
+            if(mySys.model==2)
+            {
+                en += compute_energy_pair_Lennard_Jones(i,j);
+            }
     
-    
+        }
     }
    
     return en;

@@ -77,13 +77,13 @@ void do_MC_sweep()
         
         if (u <= exp(en_diff/mySys.T)){
             mySys.energy= new_en;
-            printf("accepted!");
+            mySys.accepted+=1;
 
         }
         else {
             rollback(chosen_i);
             temp_to_old(chosen_i);
-            printf("not accepted!");
+
         }
     }
 
@@ -95,19 +95,18 @@ void do_MC(){
     //char dumpname[100];
     //char restartname[100];
 
-    FILE* f = fopen("energy.dat", "a");
-    FILE* g = fopen("acceptance.dat", "a"); 
+    FILE* f = fopen("energy_hard_spheres.dat", "a");
+    FILE* g = fopen("acceptance_hard_spheres.dat", "a"); 
 
     //sprintf(restartname,"restartpoint.dat");
-    
+    fprintf(f, "\n");
     for(mySys.step=0; mySys.step < mySys.NSteps; mySys.step++)
-    {
-         
+    {   
+        mySys.accepted=0;
         do_MC_sweep();
-        printf("\n");
-        WriteConf("configurations_test.dat");
-        fprintf(f,"%f \n", mySys.energy);
-        //fprintf(g, "%f \n", mySys.accepted[0]/mySys.tries[0]);
+        //WriteConf("configurations_test.dat");
+        fprintf(f,"%f,", mySys.energy);
+        fprintf(g, "%ld,", mySys.accepted);
 
 
 

@@ -1,10 +1,10 @@
 N = 100
-N_steps = 1000
-box_x = 100
-box_y = 100
-box_z = 100
-temperature = 1.
-delta_x = 0.8
-myseed = 7.
+N_steps = 100
+box_x = 12.6
+box_y = 12.6
+box_z = 12.6
+temperature = 3.
+delta_x = 0.01
+myseed = 1.
 sigma = 1
 

@@ -24,8 +24,8 @@ typedef struct
     long seed;
 
     int overlap;
-    long int tries[N_MOVES];		//array with trial number for different moves
-    long int accepted[N_MOVES];		//acceptance for different moves
+    //long int tries;		//array with trial number for different moves
+    long int accepted;		//acceptance for different moves
 
     double disp_max;		       //maximum displacement for colloids
 	
