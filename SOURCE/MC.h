@@ -75,7 +75,7 @@ void do_MC_sweep()
         en_diff= new_en-old_en;
         u = ran3(&mySys.seed);
         
-        if (u <= exp(en_diff/mySys.T)){
+        if (u > exp(en_diff/mySys.T)){
             mySys.energy= new_en;
             mySys.accepted+=1;
 
@@ -99,7 +99,7 @@ void do_MC(){
     FILE* g = fopen("acceptance_hard_spheres.dat", "a"); 
 
     //sprintf(restartname,"restartpoint.dat");
-    fprintf(f, "\n");
+
     for(mySys.step=0; mySys.step < mySys.NSteps; mySys.step++)
     {   
         mySys.accepted=0;
@@ -116,6 +116,7 @@ void do_MC(){
         //if(mySys.step % mySys.NPrint == 0){ 
             //printf("dumping...\n");
     }
+    fprintf(f, "\n");
     
    
     fclose(f); fclose(g);
