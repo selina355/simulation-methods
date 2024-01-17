@@ -58,26 +58,31 @@ void translation(long int idp)
 void do_MC_sweep()
 {
     double old_en, new_en, en_diff;
+    int old_o,new_o;
     long int i, chosen_i; 
     double u;
+
     for (i=0;i<mySys.NPart; i++)
     {
         //compute old energy
 
         old_en = compute_energy();
         mySys.energy = old_en;
-
+        //old_o= mySys.overlap;
+        printf("old en %f ," , old_en);
         //draw random particle index i
         chosen_i = (long int) (ran3(&mySys.seed )*  mySys.NPart);
         translation(chosen_i);
-
-        new_en = compute_energy();
-        en_diff= new_en-old_en;
-        u = ran3(&mySys.seed);
         
-        if (u > exp(en_diff/mySys.T)){
+        new_en = compute_energy();
+        printf("new_en %f ," , new_en);
+        en_diff= old_en-new_en;
+        
+    
+        if ((en_diff>=10000)|(new_en==0)){
             mySys.energy= new_en;
             mySys.accepted+=1;
+            printf("accepted");
 
         }
         else {
@@ -85,6 +90,7 @@ void do_MC_sweep()
             temp_to_old(chosen_i);
 
         }
+        printf("\n");
     }
 
     

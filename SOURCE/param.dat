@@ -4,7 +4,7 @@ box_x = 12.6
 box_y = 12.6
 box_z = 12.6
 temperature = 3.
-delta_x = 0.01
+delta_x = 1.
 myseed = 1.
 sigma = 1
 

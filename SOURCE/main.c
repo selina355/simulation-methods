@@ -16,7 +16,7 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
 
     int dmax_i,box_i,runs_i;
     double dmax[6]= {0.01,0.05,0.01,0.3,0.7,1.};
-    double boxsize[4] = {12.6, 6.93, 5.85, 4.64};
+    double boxsize[4] = {12.6};//, 6.93, 5.85, 4.64};
     double seeds[10]={1., 2.,3.,4.,5.,6.,7.,8.,9.};
 
     read_input_file();
@@ -28,8 +28,8 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
     f = fopen("energy_hard_spheres.dat","w");
     g = fopen("acceptance_hard_sheres.dat","w");
     fclose(f);fclose(g);
-
-    for (box_i=0; box_i<4;box_i++)
+/*
+    for (box_i=0; box_i<1;box_i++)
     {
         mySys.box_x=boxsize[box_i];
         mySys.box_y=boxsize[box_i];
@@ -51,6 +51,10 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
         }
 
     }
+
+    */
+    initialise_random();
+    do_MC();
     
      
     
