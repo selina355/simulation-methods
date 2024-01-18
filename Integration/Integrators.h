@@ -13,18 +13,18 @@ void symplectic_euler_step(int i, double* x ,double* p, double dt)
     
 }
 
-void initialise_verlet(int i, double * x, double *v, double * a, double dt, double omega)
+void initialise_verlet( double * x, double *v, double * a, double dt, double omega)
 {
     x[1]= x[0] + v[0]*dt + 0.5*a[0]*dt*dt;
-    a[1]= -omega * omega * x[1];
+    a[1]= - x[1];
 }
 
 void verlet_step(int i, double *x, double*v, double*a, double dt,double omega)
 {
     if (i<1){printf("verlet needs to be initialised!"); return;}
     x[i]= 2*x[i-1] - x[i-2] + a[i-1]*dt*dt;
-    a[i] = -omega * omega * x[i];
-    v[i-1]=(x[i]-x[i-1])/(2*dt);
+    a[i] = - x[i];
+    v[i-1]=(x[i]-x[i-1])/(dt);
 }
 
 void velocity_verlet_step(int i, double *x, double*v, double*a, double dt,double omega)
@@ -35,6 +35,7 @@ void velocity_verlet_step(int i, double *x, double*v, double*a, double dt,double
     //drift
     x[i] = x[i-1] + v_half*dt;
     
+
     //calculate forces
     a[i]= -omega*omega*x[i];
 
