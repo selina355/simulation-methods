@@ -36,15 +36,26 @@ int main()
         euler_step(i,x,v,dt_small);
         H[i]=calculate_H(x[i],v[i],1);
         err[i]= (x[i]-cos(t[i]))/cos(t[i]);
-
-        
+   
     }
+
     write_array("Intgeration_Data.csv",t,N_small);
     write_array("Intgeration_Data.csv",x,N_small);
     write_array("Intgeration_Data.csv",v,N_small);
     write_array("Intgeration_Data.csv",err,N_small);
     write_array("Intgeration_Data.csv",H,N_small);
     
+    for(int i=1;i<N_small+1; i++)
+    {
+        symplectic_euler_step(i,x,v,dt_small);
+        H[i]=calculate_H(x[i],v[i],1);
+        err[i]= (x[i]-cos(t[i]))/cos(t[i]);
+    }
+
+    write_array("Intgeration_Data.csv",x,N_small);
+    write_array("Intgeration_Data.csv",v,N_small);
+    write_array("Intgeration_Data.csv",err,N_small);
+    write_array("Intgeration_Data.csv",H,N_small);
     
 
     free(x);free(v);free(t);free(H);free(err);
