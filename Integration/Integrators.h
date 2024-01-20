@@ -24,11 +24,16 @@ void verlet_step(int i, double *x, double*v, double*a, double dt,double omega)
     if (i<1){printf("verlet needs to be initialised!"); return;}
     x[i]= 2*x[i-1] - x[i-2] + a[i-1]*dt*dt;
     a[i] = - x[i];
-    v[i-1]=(x[i]-x[i-1])/(dt);
+    v[i-1]=(x[i]-x[i-2])/(2*dt);
 }
 
 void velocity_verlet_step(int i, double *x, double*v, double*a, double dt,double omega)
 {
+    x[i] = x[i-1] + v[i-1]*dt +0.5*a[i-1]*dt*dt;
+    a[i] = -x[i];
+    v[i] = v[i-1] + 0.5*dt*(a[i]+a[i-1]);
+
+    /*
     //1st half kick
     double v_half = v[i-1] + dt/2*a[i-1];
 
@@ -41,6 +46,7 @@ void velocity_verlet_step(int i, double *x, double*v, double*a, double dt,double
 
     //2nd half kick
     v[i]=v_half+ dt/2*a[i];
+    */
 
 }
 double calculate_H(double x,double v,double k)
