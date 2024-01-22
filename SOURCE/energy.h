@@ -13,13 +13,15 @@ double distance_two_particles(long int i, long int j){
 
 }
 int get_overlaps(){
+
     int overlap=0;
     double distance;
     long int i, j;
     for(i = 0; i< mySys.NPart; i++)
     {
-        for (j=i;j<mySys.NPart;j++)
+        for (j=0;j<mySys.NPart;j++)
         {
+            if(i==j){continue;}
             distance = distance_two_particles(i,j);
             if (distance < mySys.sigma)
             {   
@@ -28,7 +30,8 @@ int get_overlaps(){
             }
         }
     }
-    return overlap;
+    return overlap/2;
+
 }
 
 double compute_energy_hard_spheres(){
@@ -98,26 +101,21 @@ double compute_energy()
     //long int index;
     //ong int ix, iy, iz;
     long int j;
-    if(mySys.model ==0)
-    {
-        en += compute_energy_translation();
-    }
+    en += compute_energy_translation();
+    
     
     if(mySys.model ==1)
     {
         en += compute_energy_hard_spheres();
     }
-
-    for(i = 0; i< mySys.NPart; i++)
+    if(mySys.model ==2)
     {
-        for (j=i;j<mySys.NPart;j++)
+        for(i = 0; i< mySys.NPart; i++)
         {
-            
-            if(mySys.model==2)
+            for (j=i;j<mySys.NPart;j++)
             {
                 en += compute_energy_pair_Lennard_Jones(i,j);
             }
-    
         }
     }
    

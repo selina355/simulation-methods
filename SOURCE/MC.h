@@ -43,7 +43,7 @@ void translation(long int idp)
     x_disp = parts[idp].x + (-1 +2*ran3(&mySys.seed) ) * mySys.disp_max;
     y_disp = parts[idp].y + (-1 +2*ran3(&mySys.seed) ) * mySys.disp_max;
     z_disp = parts[idp].z + (-1 +2*ran3(&mySys.seed) ) * mySys.disp_max;
-
+    //printf("Displacement in x,y,z: %f,%f,%f ",x_disp - parts[idp].x,y_disp-parts[idp].y,z_disp - parts[idp].z);
     //enforce periodic boundary conditions
     parts[idp].x= P_Img(x_disp, mySys.box_x);
     parts[idp].y= P_Img(y_disp, mySys.box_y);
@@ -57,7 +57,7 @@ void translation(long int idp)
 
 void do_MC_sweep()
 {
-    double old_en, new_en, en_diff;
+    double old_en, new_en, en_diff, old_overlaps;
     int old_o,new_o;
     long int i, chosen_i; 
     double u;
@@ -65,38 +65,77 @@ void do_MC_sweep()
     for (i=0;i<mySys.NPart; i++)
     {
         //compute old energy
-
         old_en = compute_energy();
+        old_o= get_overlaps();
         mySys.energy = old_en;
-        //old_o= mySys.overlap;
-        printf("old en %f ," , old_en);
+        mySys.overlap= old_o;
+
+
+        ///printf("old en %f , old overlaps %d" , old_en, old_o);
+
         //draw random particle index i
         chosen_i = (long int) (ran3(&mySys.seed )*  mySys.NPart);
+        
+        //printf("chosen  particle %ld, at %.3f , %.3f , %.3f " , chosen_i,parts[chosen_i].x,parts[chosen_i].y,parts[chosen_i].z);
         translation(chosen_i);
-        
         new_en = compute_energy();
-        printf("new_en %f ," , new_en);
-        en_diff= old_en-new_en;
-        
-    
-        if ((en_diff>=10000)|(new_en==0)){
-            mySys.energy= new_en;
-            mySys.accepted+=1;
-            printf("accepted");
+        new_o = get_overlaps();
+        en_diff= new_en-old_en;
 
-        }
-        else {
+        //printf("new_en %f , enegry dif = %f , new overlaps %d\n" , new_en, en_diff, mySys.overlap);
+        if(mySys.model==1)
+        {
+            if ((new_o< old_o )|| new_o== 0)
+            {
+                mySys.energy= new_en;
+                mySys.overlap= new_o;
+
+                mySys.accepted+=1;
+                //printf("accepted! new particle position at %.3f , %.3f , %.3f\n",parts[chosen_i].x,parts[chosen_i].y,parts[chosen_i].z);
+
+            }
+            else
+            {
             rollback(chosen_i);
             temp_to_old(chosen_i);
+            mySys.overlap=old_o;
+            //printf("not accepted!\n");
+
+            }
 
         }
-        printf("\n");
-    }
+        else
+        {
+            u = ran3(&mySys.seed);
 
+            if (u < exp(-en_diff/mySys.T))
+            {
+                mySys.energy= new_en;
+                mySys.overlap= new_o;
+
+                mySys.accepted+=1;
+                //printf("accepted! new particle position at %.3f , %.3f , %.3f\n",parts[chosen_i].x,parts[chosen_i].y,parts[chosen_i].z);
+
+            }
+            else
+            {
+                rollback(chosen_i);
+                temp_to_old(chosen_i);
+                mySys.overlap=old_o;
+                mySys.energy=old_en;
+                //printf("not accepted!\n");
+
+            }
+
+        }
+               
+    }
+    //printf("%ld, %d\n",mySys.accepted,mySys.overlap);
     
 }
 
-void do_MC(){
+void do_MC()
+{
 
     //char dumpname[100];
     //char restartname[100];
@@ -110,6 +149,7 @@ void do_MC(){
     {   
         mySys.accepted=0;
         do_MC_sweep();
+        
         //WriteConf("configurations_test.dat");
         fprintf(f,"%f,", mySys.energy);
         fprintf(g, "%ld,", mySys.accepted);
@@ -123,24 +163,36 @@ void do_MC(){
             //printf("dumping...\n");
     }
     fprintf(f, "\n");
-    
+    printf("n%f, ", mySys.energy);
+    printf( "%ld,\n", mySys.accepted);
    
     fclose(f); fclose(g);
-   
 }
 
 //my function to  initialise the system
 void initialise_random(){
     //double en = 0.;
-    long int i;
+    long int i,j,k;
+    double x_disp,y_disp,z_disp;
+    int overlaps;
     for( i = 0; i < mySys.NPart; i++)
     {
+
         parts[i].x = ran3(&mySys.seed)*mySys.box_x;
         parts[i].y= ran3(&mySys.seed)*mySys.box_y;
         parts[i].z = ran3(&mySys.seed)*mySys.box_y;
+        translation(i);
+    
+    }
+    return;
+}
+        
+
+    
+/*       
 
         translation(i);
-/*
+
         ///initialise x y z after boltzman dist
         parts[i].x = parts[i].ox + gaussrand(&mySys.seed)*sqrt(mySys.T);
         parts[i].y = parts[i].oy + gaussrand(&mySys.seed)*sqrt(mySys.T);
@@ -154,6 +206,3 @@ void initialise_random(){
         en += (parts[i].z -parts[i].oz)*(parts[i].z -parts[i].oz);   
     
 */
-    }
-}
-
