@@ -163,7 +163,9 @@ void do_MC()
             //printf("dumping...\n");
     }
     fprintf(f, "\n");
-    printf("n%f, ", mySys.energy);
+    fprintf(g, "\n");
+
+    printf("%f, ", mySys.energy);
     printf( "%ld,\n", mySys.accepted);
    
     fclose(f); fclose(g);
