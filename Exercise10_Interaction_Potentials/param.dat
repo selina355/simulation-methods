@@ -1,0 +1,15 @@
+N = 200
+N_steps = 800
+box_x =  10
+box_y =  10
+box_z =  10
+max_step=1.
+temperature = 1.
+myseed = 4.
+cutoff = 1
+
+
+
+
+
+
