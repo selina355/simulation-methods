@@ -38,28 +38,65 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
     
 
    
-    int i;
+    int i,j,k,l;
     double energy;
     read_input_file();
     allocate_();   
     mySys.cut_off=4.;
     mySys.max_step=1.;
-
+    
+    char init_configuration_filename[100];
+    char distances_filename[100];
+    FILE* f;
     //while()
     //equalibrate_inital_pos(4.,0);
     double rcs[16]={pow(2.,1./6.),1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.,3.2,3.4,3.6,3.8,4.};
-    for (i=0;i<16;i++){
-
-        equalibrate_inital_pos(rcs[i],i);
-    }
-    
-    
     /*
-    ReadConf("configuration0.dat");
-    draw_velocities();
-    for (i=0;i<mySys.NPart;i++){
-        calculate_accelerations(i);
+    for (i=0;i<1;i++){
+        sprintf(init_configuration_filename,"configuration%d.dat",i);
+        sprintf(distances_filename,"distances%d.dat",i);
+        f= fopen(distances_filename,"w");
+        //equalibrate_inital_pos(rcs[i],i);
+        ReadConf(init_configuration_filename);
+        mySys.cut_off=rcs[i];
+        for( j=0;j<1000;j++)
+        {
+        verlet_step(0.01);
+        if(j>500)
+        {
+            for (k=0;k<mySys.NPart;k++){
+                for (l=0;l<k;l++){
+                    fprintf(f,"%f ",r_squared_two_particles(k,l));
+
+                }
+            }
+            fprintf(f,"\n");
+
+        }
+
+        
+        energy= compute_energy();
+        printf("energy: %f \n",energy);
+        printf("total kinetic energy: %f\n", kinetic_energy());
+        printf("total energy %f\n ", compute_energy());
+        printf("total momentum: %f \n",total_momentum());
+        fclose(f);
+        
     }
+
+
+    }
+    
+    
+    */
+    ReadConf("configuration15.dat");
+    //draw_velocities();
+    mySys.cut_off=rcs[15];
+    i=15;
+     sprintf(distances_filename,"distances%d.dat",i);
+    f= fopen(distances_filename,"w");
+
+    
     printf("total kinetic energy: %f\n", kinetic_energy());
     printf("total energy %f\n ", compute_energy());
     printf("total momentum: %f \n",total_momentum());
@@ -67,13 +104,24 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
 
     for( i=0;i<1000;i++)
     {
-        
         verlet_step(0.01);
+        if(i>500)
+        {
+            for (k=0;k<mySys.NPart;k++){
+                for (l=0;l<k;l++){
+                    fprintf(f,"%f ",r_squared_two_particles(k,l));
+
+                }
+            }
+            fprintf(f,"\n");
+            
+
+        }
         energy= compute_energy();
         printf("energy: %f \n",energy);
-            printf("total kinetic energy: %f\n", kinetic_energy());
-    printf("total energy %f\n ", compute_energy());
-    printf("total momentum: %f \n",total_momentum());
+        printf("total kinetic energy: %f\n", kinetic_energy());
+        printf("total energy %f\n ", compute_energy());
+        printf("total momentum: %f \n",total_momentum());
          
         
     }
@@ -84,16 +132,13 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
     
 
 
+    fclose(f);
 
-    
-
-    
- 
     // Release memory used by particles, it is not needed anymore
     clean_();
 
     return 0;
-*/  
+
 }
 // gcc -o ../main main.c -lm
 
