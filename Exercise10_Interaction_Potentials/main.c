@@ -10,24 +10,52 @@
 #include "energy.h"
 #include "MC.h"
 
+void equalibrate_inital_pos( double rc,int i)
+{
+    
+    char filename[100];
+    read_input_file();
+    allocate_();
+    mySys.cut_off=rc;
+    printf(" CUTOFFFF%f\n", mySys.cut_off);
+
+
+    initialise_random_start();
+    do_MC();
+    printf("hi");
+    sprintf(filename,"configuration%d.dat",i);
+    WriteConf(filename);
+    printf("equalibrated system with %f to file  %s\n",rc , filename);
+    clean_();
+
+    
+
+
+}
+
 int main(int argc, char* argv[] ) //start with command line options. char*argv[] means this is an array of indetermined size of pinters to char, in other words an array of strings.argv is a pointer to string array holding the actual parameters.
 {
     
 
-    //int dmax_i,box_i,runs_i;
+   
     int i;
     double energy;
     read_input_file();
     allocate_();   
     mySys.cut_off=4.;
     mySys.max_step=1.;
-    printf("%f\n", mySys.cut_off);
+
+    //while()
+    //equalibrate_inital_pos(4.,0);
+    double rcs[16]={pow(2.,1./6.),1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.,3.2,3.4,3.6,3.8,4.};
+    for (i=0;i<16;i++){
+
+        equalibrate_inital_pos(rcs[i],i);
+    }
+    
+    
     /*
-    initialise_random_start();
-    do_MC();
-    WriteConf("configuration.dat");
-    */
-    ReadConf("configuration.dat");
+    ReadConf("configuration0.dat");
     draw_velocities();
     for (i=0;i<mySys.NPart;i++){
         calculate_accelerations(i);
@@ -37,7 +65,7 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
     printf("total momentum: %f \n",total_momentum());
 
 
-    for( i=0;i<500;i++)
+    for( i=0;i<1000;i++)
     {
         
         verlet_step(0.01);
@@ -65,6 +93,7 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
     clean_();
 
     return 0;
+*/  
 }
 // gcc -o ../main main.c -lm
 

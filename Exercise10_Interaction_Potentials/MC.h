@@ -128,7 +128,7 @@ void do_MC()
     {   
         mySys.accepted=0;
         do_MC_sweep();
-        
+        /*
         //WriteConf("configurations_test.dat");
         //fprintf(f,"%f,", mySys.energy);
         //printf(g, "%ld,", mySys.accepted);
@@ -136,14 +136,14 @@ void do_MC()
         printf( "%ld,", mySys.accepted);
         printf("%f, ", kinetic_energy());
         printf("total momentum: %f \n",total_momentum());
-
+        */
         
         //if(mySys.step % 1000 == 0)  WriteConf(restartname);
      
         //if(mySys.step % mySys.NPrint == 0){ 
             //printf("dumping...\n");
     }
-    WriteConf("inital_for_r_c=big.dat");
+    
 
     //fprintf(g, "\n");
 
