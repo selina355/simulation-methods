@@ -139,7 +139,7 @@ int main( int argc, char **argv){
   
   //create/ file for saving the data, and write a header line with what will follow
   fp = fopen(FILENAME, "w");
-  fprintf(fp, " contents: example rectangle x-coordinates; example rectangle y coordinates; hit elements of unit disk x, hit elements of unit disk y; area estimated rectangle, area estimates circle, number of throws \n");
+  fprintf(fp, " contents: example rectangle x-coordinates; example rectangle y coordinates; example circlex, example circley; hit elements of unit disk x, hit elements of unit disk y; area estimated rectangle, area estimates circle, number of throws \n");
 
   fclose(fp);
 
@@ -147,16 +147,26 @@ int main( int argc, char **argv){
   double arrayx[N];
   double arrayy[N];
 
+  double circlex[N];
+  double circley[N];
+
   //sample the rectangle uniformly
   sample_uniform_rec(arrayx,arrayy,a,b,c,d,N);
   for(i=0;i<N; i++)
   {
-  
+    if (arrayx[i]*arrayx[i] + arrayy[i]*arrayy[i] <= 1 )
+      {
+        circlex[i] = arrayx[i];
+        circley[i] = arrayy[i];
+      } 
   }
 
   //write data to file
   write_array(FILENAME, arrayx,N);
   write_array(FILENAME, arrayy,N);
+
+  write_array(FILENAME, circlex,N);
+  write_array(FILENAME, circley,N);
 
 
 
@@ -172,20 +182,6 @@ int main( int argc, char **argv){
   printf("true rect area: %.4f", true_area_rect);
   printf("estimated area circle %.8f", area_circle);
 
-  // for test of where the hits happen, save all hits to array 
-  double hit_points_x[1000]={0,};
-  double hit_points_y[1000]={0,};
-  for (i=0;i<N;i++)
-    {
-      if (arrayx[i]*arrayx[i] + arrayy[i]*arrayy[i] <= 1 )
-      {
-        hit_points_x[-1] = arrayx[i];
-        hit_points_y[-1] = arrayy[i];
-
-      } 
-    }
-  write_array(FILENAME, hit_points_x,N);
-  write_array(FILENAME, hit_points_y,N);
 
   //see how changing the number of throws affects the accuracy of the estimation
   int Number_of_throws[9] ={50, 100,500,1000, 5000, 10000, 50000,100000};
