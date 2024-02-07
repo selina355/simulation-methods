@@ -12,6 +12,18 @@ double distance_two_particles(long int i, long int j){
     return distance;
 
 }
+double distance_squared_two_particles(long int i, long int j){
+    double distx,disty,distz;
+    double distance;
+    distx= MinD((parts[i].x -parts[j].x), mySys.box_x);
+    disty= MinD((parts[i].y -parts[j].y), mySys.box_y);
+    distz= MinD((parts[i].z -parts[j].z), mySys.box_z);
+
+    distance= (distx*distx +disty*disty +distz*distz);
+    return distance;
+
+}
+
 int get_overlaps(){
 
     int overlap=0;
@@ -19,18 +31,18 @@ int get_overlaps(){
     long int i, j;
     for(i = 0; i< mySys.NPart; i++)
     {
-        for (j=0;j<mySys.NPart;j++)
+        for (j=0;j<i;j++)
         {
-            if(i==j){continue;}
-            distance = distance_two_particles(i,j);
-            if (distance < mySys.sigma)
+            //if(i==j){continue;}
+            distance = distance_squared_two_particles(i,j);
+            if (distance < mySys.sigma*mySys.sigma)
             {   
                 overlap +=1;
 
             }
         }
     }
-    return overlap/2;
+    return overlap;
 
 }
 

@@ -4,7 +4,7 @@
 #include <string.h>
 #include "Integrators.h"
 
-double * x, *t, *v,*a,*H,*H_shadow,*err;
+double * x, *t, *v,*v_bad,*a,*H,*H_bad,*H_shadow,*err;
 
 int main()
 {
@@ -24,6 +24,7 @@ int main()
 //*************************** Euler small stepsize***********************************************
     x = ( double *)malloc(N_small*sizeof(double));
     v = ( double *)malloc(N_small*sizeof(double));
+    
     t= ( double *)malloc(N_small*sizeof(double));
     H = ( double *)malloc(N_small*sizeof(double));
     H_shadow = ( double *)malloc(N_small*sizeof(double));
@@ -82,7 +83,7 @@ int main()
     H_shadow[0]= calculate_shadow_H(x[0],v[0], 1.,dt_big);
     err[0]=0;
 
-    for(int i=1;i<N_big+1; i++)
+    for(i=1;i<N_big+1; i++)
     {
         t[i]= i*dt_big;
         euler_step(i,x,v,dt_big);
@@ -98,7 +99,7 @@ int main()
     write_array("Intgeration_Data.csv",H,N_big);
 
 //*************************** Symplectic stepsize***********************************************    
-    for(int i=1;i<N_big+1; i++)
+    for(i=1;i<N_big+1; i++)
     {
 
         symplectic_euler_step(i,x,v,dt_big);
@@ -113,9 +114,9 @@ int main()
     write_array("Intgeration_Data.csv",H,N_big);
     write_array("Intgeration_Data.csv",H_shadow,N_big);
   
-//Velocity Verlet
+//****************************Velocity Verlet******************************
     N_big= 10000;
-    dt_big=0.5;
+    dt_big=0.1;
     x = ( double *)realloc(x,N_big*sizeof(double));
     v = ( double *)realloc(v,N_big*sizeof(double));
     t= ( double *)realloc(t,N_big*sizeof(double));
@@ -124,7 +125,7 @@ int main()
     err= ( double *)realloc(err,N_big*sizeof(double));
 
     a = ( double *)malloc(N_big*sizeof(double));
-    x[0]= 1;
+    x[0]= 1.;
     v[0]= 0;
     t[0]=0;
     a[0]= -x[0];
@@ -132,50 +133,62 @@ int main()
     H[0]=calculate_H(x[0],v[0], 1.);
     err[0]=0;
 
-    for(int i=1;i<N_big+1; i++)
+    for(i=1;i<N_big+1; i++)
     {
 
         velocity_verlet_step(i,x,v,a,dt_big, 1.);
-        H[i]=calculate_H(x[i],v[i],1);
+   
         err[i]= x[i]-cos(i*dt_big);
    
+    }
+    for(i=0;i<N_big+1; i++)
+    {
+      H[i]=calculate_H(x[i],v[i],1.);
     }
     write_array("Intgeration_Data.csv",x,N_big);
     write_array("Intgeration_Data.csv",v,N_big);
     write_array("Intgeration_Data.csv",err,N_big);
     write_array("Intgeration_Data.csv",H,N_big);
-// regular verlet
 
+//*********************** regular verlet*********************************
+    v_bad = ( double *)malloc(N_small*sizeof(double));
+    H_bad = (double*)malloc(N_small*sizeof(double));
     x[0]= 1;
     v[0]= 0;
+    v_bad[0]=0;
     t[0]=0;
     a[0]= -x[0];
 
     initialise_verlet(x,v,a,dt_big,1.);
 
-    for(int i=2;i<N_big+1; i++)
+    for(i=2;i<N_big+1; i++)
     {
-        verlet_step(i,x,v,a,dt_big, 1.);
+        verlet_step(i,x,v,v_bad,a,dt_big,1.);
         err[i]= x[i]-cos(i*dt_big);
         
     }
 
-    for(int i=0;i<N_big+1; i++)
+    for(i=0;i<N_big+1; i++)
     {
         H[i]=calculate_H(x[i],v[i],1.);
+        H_bad[i]=calculate_H(x[i],v_bad[i],1.);
+        
+
     }
 
     write_array("Intgeration_Data.csv",x,N_big);
     write_array("Intgeration_Data.csv",v,N_big);
+    write_array("Intgeration_Data.csv",v_bad,N_big);
     write_array("Intgeration_Data.csv",err,N_big);
     write_array("Intgeration_Data.csv",H,N_big);
+    write_array("Intgeration_Data.csv",H_bad,N_big);
 
-    //test Velocity verlet for different timesteps
+//****************test Velocity verlet for different timesteps*****************
     double test_dt[6]={ 0.01,0.5,1.5,2,2.5,3};
     for(j=0; j<6;j++)
     {
 
-        for(int i=1;i<N_big+1; i++)
+        for(i=1;i<N_big+1; i++)
         {
             velocity_verlet_step(i,x,v,a,test_dt[j], 1.);
             err[i]= x[i]-cos(i*test_dt[j]);
@@ -189,7 +202,7 @@ int main()
     for(j=0; j<6;j++)
     {
 
-        for(int i=1;i<N_big+1; i++)
+        for( i=1;i<N_big+1; i++)
         {
             velocity_verlet_step(i,x,v,a,test_dt[j], 1.);
             
@@ -206,7 +219,7 @@ int main()
 
 
 
-    free(x);free(v);free(t);free(a);free(H);free(err);free(H_shadow);
+    free(x);free(v);free(v_bad);free(t);free(a);free(H); free(H_bad);free(err);free(H_shadow);
 
 
 }

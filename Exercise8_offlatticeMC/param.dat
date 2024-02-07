@@ -1,5 +1,5 @@
 N = 100
-N_steps = 500
+N_steps = 200
 box_x = 12.6
 box_y = 12.6
 box_z = 12.6

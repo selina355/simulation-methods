@@ -134,14 +134,15 @@ void do_MC_sweep()
     
 }
 
-void do_MC()
+void do_MC( char* energy_file, char*acceptance_file, char* finaldistances_file)
 {
 
     //char dumpname[100];
     //char restartname[100];
 
-    FILE* f = fopen("energy_hard_spheres.dat", "a");
-    FILE* g = fopen("acceptance_hard_spheres.dat", "a"); 
+    FILE* f = fopen(energy_file, "a");
+    FILE* g = fopen(acceptance_file, "a"); 
+    FILE* h=fopen(finaldistances_file, "a");
 
     //sprintf(restartname,"restartpoint.dat");
 
@@ -152,18 +153,24 @@ void do_MC()
         
         //WriteConf("configurations_test.dat");
         fprintf(f,"%f,", mySys.energy);
-        fprintf(g, "%ld,", mySys.accepted);
-
-
-
-        
+        fprintf(g, "%ld,", mySys.accepted); 
         //if(mySys.step % 1000 == 0)  WriteConf(restartname);
      
         //if(mySys.step % mySys.NPrint == 0){ 
             //printf("dumping...\n");
     }
+    //print final distances between particles
+    for( int i = 0; i < mySys.NPart; i++)
+    {
+        for (int j=0;j<i; j++){
+            fprintf(h, "%f,", distance_two_particles(i,j) );
+        }  
+    }
+
     fprintf(f, "\n");
     fprintf(g, "\n");
+    fprintf(h, "\n");
+
 
     printf("%f, ", mySys.energy);
     printf( "%ld,\n", mySys.accepted);
@@ -176,7 +183,7 @@ void initialise_random(){
     //double en = 0.;
     long int i,j,k;
     double x_disp,y_disp,z_disp;
-    int overlaps;
+    
     for( i = 0; i < mySys.NPart; i++)
     {
 
@@ -188,6 +195,49 @@ void initialise_random(){
     }
     return;
 }
+
+
+//my function to  initialise the system
+void initialise_lattice(){
+    
+    //double[mySys.NPart] usedx, double[mySys.NPart] usedy, double[mySys.NPart] usedz; 
+
+   
+    
+
+    // total number of particles that fit in each direction
+    int nx = (int)floor(mySys.box_x/mySys.sigma)-1;
+    int ny = (int)floor(mySys.box_y/mySys.sigma)-1;
+    int nz = (int)floor(mySys.box_z/mySys.sigma)-1;
+
+    int count = 0;
+
+    
+    for (int i = 0; i < nx; i++) {
+        for (int j = 0; j < ny; j++)
+        {
+            for (int k = 0; k < nz; k++){
+                if (count < mySys.NPart){
+                parts[i*nz*ny + j*nz + k].x = i*mySys.sigma;  
+                parts[i*nz*ny + j*nz + k].y = j*mySys.sigma;
+                parts[i*nz*ny + j*nz + k].z = k*mySys.sigma;
+                count++;
+                }
+            }
+        }
+        
+        
+    }
+
+
+    mySys.overlap= get_overlaps();
+    printf("INITIAL OVERLAPS %d\n",mySys.overlap);
+
+
+    return;
+    }
+    
+
         
 
     
