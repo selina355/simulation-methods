@@ -137,14 +137,9 @@ void do_MC_sweep()
 void do_MC( char* energy_file, char*acceptance_file, char* finaldistances_file)
 {
 
-    //char dumpname[100];
-    //char restartname[100];
-
     FILE* f = fopen(energy_file, "a");
     FILE* g = fopen(acceptance_file, "a"); 
     FILE* h=fopen(finaldistances_file, "a");
-
-    //sprintf(restartname,"restartpoint.dat");
 
     for(mySys.step=0; mySys.step < mySys.NSteps; mySys.step++)
     {   
@@ -155,7 +150,7 @@ void do_MC( char* energy_file, char*acceptance_file, char* finaldistances_file)
         fprintf(f,"%f,", mySys.energy);
         fprintf(g, "%ld,", mySys.accepted); 
         //if(mySys.step % 1000 == 0)  WriteConf(restartname);
-     
+
         //if(mySys.step % mySys.NPrint == 0){ 
             //printf("dumping...\n");
     }
@@ -171,11 +166,47 @@ void do_MC( char* energy_file, char*acceptance_file, char* finaldistances_file)
     fprintf(g, "\n");
     fprintf(h, "\n");
 
-
     printf("%f, ", mySys.energy);
     printf( "%ld,\n", mySys.accepted);
    
-    fclose(f); fclose(g);
+    fclose(f); fclose(g);fclose(h);
+}
+
+void do_MC_Lennard_Jones(char* energy_file, char*acceptance_file, char* finaldistances_file,char* pressure_file){
+    FILE* p=fopen(pressure_file, "a");
+    FILE* f = fopen(energy_file, "a");
+    FILE* g = fopen(acceptance_file, "a"); 
+    FILE* h=fopen(finaldistances_file, "a");
+    for(mySys.step=0; mySys.step < mySys.NSteps; mySys.step++)
+    {   
+        mySys.accepted=0;
+        do_MC_sweep();
+        
+        //WriteConf("configurations_test.dat");
+        fprintf(f,"%f,", mySys.energy);
+        fprintf(g, "%ld,", mySys.accepted); 
+        fprintf(p, "%f,",calculate_pressure());
+        
+        
+   
+    }
+    //print final distances between particles
+    for( int i = 0; i < mySys.NPart; i++)
+    {
+        for (int j=0;j<i; j++){
+            fprintf(h, "%f,", distance_two_particles(i,j) );
+        }  
+    }
+    printf("%f, ", compute_energy_Lennard_Jones());
+    printf("%f, ", calculate_pressure());
+    printf( "%ld,\n", mySys.accepted);
+
+    fprintf(f, "\n");
+    fprintf(g, "\n");
+    fprintf(h, "\n");
+    fprintf(p,"\n");
+    fclose(f); fclose(g);fclose(h);fclose(p);
+
 }
 
 //my function to  initialise the system
@@ -191,7 +222,6 @@ void initialise_random(){
         parts[i].y= ran3(&mySys.seed)*mySys.box_y;
         parts[i].z = ran3(&mySys.seed)*mySys.box_y;
         translation(i);
-    
     }
     return;
 }
@@ -206,10 +236,16 @@ void initialise_lattice(){
     
 
     // total number of particles that fit in each direction
-    int nx = (int)floor(mySys.box_x/mySys.sigma)-1;
-    int ny = (int)floor(mySys.box_y/mySys.sigma)-1;
-    int nz = (int)floor(mySys.box_z/mySys.sigma)-1;
+    int nx = (int)floor(mySys.box_x/mySys.sigma);
+    int ny = (int)floor(mySys.box_y/mySys.sigma);
+    int nz = (int)floor(mySys.box_z/mySys.sigma);
 
+    
+    if (mySys.NPart> nx*ny*nz){
+        nx+=1;
+        ny+=1;
+        nz+=1;
+    }
     int count = 0;
 
     
@@ -222,18 +258,25 @@ void initialise_lattice(){
                 parts[i*nz*ny + j*nz + k].y = j*mySys.sigma;
                 parts[i*nz*ny + j*nz + k].z = k*mySys.sigma;
                 count++;
+                //printf("%d\n",count);
                 }
             }
         }
-        
+       
         
     }
+    /*printf("%.3f , %.3f , %.3f\n",mySys.box_x,mySys.box_y,mySys.box_z);
+    // printf("%d , %d, %d\n",nx,ny,nz);
 
-
+    for (int chosen_i=0; chosen_i<mySys.NPart;chosen_i++){
+        printf("%.3f , %.3f , %.3f\n",parts[chosen_i].x,parts[chosen_i].y,parts[chosen_i].z);
+    }
+    
     mySys.overlap= get_overlaps();
+    printf("%d\n",count);
     printf("INITIAL OVERLAPS %d\n",mySys.overlap);
 
-
+    */
     return;
     }
     

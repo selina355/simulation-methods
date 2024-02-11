@@ -55,24 +55,69 @@ double compute_energy_hard_spheres(){
     
 }
 
-double compute_energy_pair_Lennard_Jones(long int i, long int j){
-    double distance = distance_two_particles(i,j);
+double compute_energy_Lennard_Jones(){
+   
     double en=0;
     double cut_off = mySys.box_x/2;
     double density= mySys.NPart/pow(mySys.box_x,3);
-    double ratio= mySys.sigma/distance;
     double ratio_cut=mySys.sigma/cut_off;
 
-    if (distance < cut_off)
-    {
-        en= 4 * ( pow(ratio,12) - pow(ratio,6));
+    double r_squared;
+    int i,j;
 
-    }
-    else 
+    for(i=0; i<mySys.NPart; i++)
     {
-        en = 8/3*PI *density*(1/3*pow(ratio_cut,9)-pow(ratio_cut,3));
+        for(j=0;j<i;j++)
+        {
+            r_squared=distance_squared_two_particles(i,j);
+            //printf("distance: %f cutoff %f\n",r_squared, (mySys.cut_off*mySys.cut_off));
+            if (r_squared < cut_off*cut_off)
+            {
+                en+= 4 * ( pow(r_squared,-6) - pow(r_squared, -3));
+            }
+            else 
+            {
+                en += 8/3*PI *density*(1/3*pow(ratio_cut,9)-pow(ratio_cut,3));
+            }
+
+
+        }
     }
     return en;
+     
+}
+
+double calculate_pressure(){
+    double cut_off = mySys.box_x/2;
+    double density= mySys.NPart/pow(mySys.box_x,3);
+    double ratio_cut=mySys.sigma/cut_off;
+    double r_squared;
+    double f_i;
+    int i,j;
+    double pressure= density*mySys.T;
+    for(i=0; i<mySys.NPart; i++)
+    {
+        
+        for(j=0;j<i;j++)
+        {
+            if(i==j){continue;}
+
+            r_squared=distance_squared_two_particles(i,j);
+            //printf("distance: %f cutoff %f\n",r_squared, (mySys.cut_off*mySys.cut_off));
+            if (r_squared < cut_off*cut_off)
+            {
+                pressure+=  1/(3*pow(mySys.box_x,3))*4 * (12*pow(1/r_squared,6) - 6*pow(1/r_squared, 3));
+            }
+        
+                
+            
+
+
+        }
+    } 
+    pressure += 16/3*PI *density*density*(2/3*pow(ratio_cut,9)-pow(ratio_cut,3));
+    return pressure;  
+
 }
 
 
@@ -113,7 +158,10 @@ double compute_energy()
     //long int index;
     //ong int ix, iy, iz;
     long int j;
-    en += compute_energy_translation();
+    if(mySys.model ==0){
+        en += compute_energy_translation();
+    }
+    
     
     
     if(mySys.model ==1)
@@ -122,13 +170,8 @@ double compute_energy()
     }
     if(mySys.model ==2)
     {
-        for(i = 0; i< mySys.NPart; i++)
-        {
-            for (j=i;j<mySys.NPart;j++)
-            {
-                en += compute_energy_pair_Lennard_Jones(i,j);
-            }
-        }
+        en += compute_energy_Lennard_Jones();
+       
     }
    
     return en;
