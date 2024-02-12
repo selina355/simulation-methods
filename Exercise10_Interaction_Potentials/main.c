@@ -89,50 +89,53 @@ int main(int argc, char* argv[] ) //start with command line options. char*argv[]
     
     
     */
-    ReadConf("configuration15.dat");
-    //draw_velocities();
-    mySys.cut_off=rcs[15];
-    i=15;
-     sprintf(distances_filename,"distances%d.dat",i);
-    f= fopen(distances_filename,"w");
-
-    
-    printf("total kinetic energy: %f\n", kinetic_energy());
-    printf("total energy %f\n ", compute_energy());
-    printf("total momentum: %f \n",total_momentum());
-
-
-    for( i=0;i<1000;i++)
+   
+    for (j=0;j<15;j++)
     {
-        verlet_step(0.01);
-        if(i>500)
-        {
-            for (k=0;k<mySys.NPart;k++){
-                for (l=0;l<k;l++){
-                    fprintf(f,"%f ",r_squared_two_particles(k,l));
+    
+        sprintf(init_configuration_filename,"configuration%d.dat",j);
+        printf(init_configuration_filename);
+        ReadConf(init_configuration_filename);
+        draw_velocities();
+        mySys.cut_off=rcs[j];
+        
+        sprintf(distances_filename,"distances%d.dat",j);
+        f= fopen(distances_filename,"w");
 
-                }
-            }
-            fprintf(f,"\n");
-            
-
-        }
-        energy= compute_energy();
-        printf("energy: %f \n",energy);
+        
         printf("total kinetic energy: %f\n", kinetic_energy());
         printf("total energy %f\n ", compute_energy());
         printf("total momentum: %f \n",total_momentum());
-         
-        
-    }
-    for( i=0;i<200;i++){
-        printf( "old %lf %lf %lf %lf %lf %lf \n", parts[i].x, parts[i].y, parts[i].z,parts[i].vx, parts[i].vy, parts[i].vz); 
+
+
+        for( i=0;i<1000;i++)
+        {
+            verlet_step(0.01);
+            if(i>900)
+            {
+                for (k=0;k<mySys.NPart;k++){
+                    for (l=0;l<k;l++){
+                        fprintf(f,"%f ",r_squared_two_particles(k,l));
+
+                    }
+                }
+                fprintf(f,"\n");
+                
+
+            }
+            /*
+            energy= compute_energy();
+            printf("energy: %f \n",energy);
+            printf("total kinetic energy: %f\n", kinetic_energy());
+            printf("total energy %f\n ", compute_energy());
+            printf("total momentum: %f \n",total_momentum());
+            */
+            
+        }   
+        fclose(f);
 
     }
     
-
-
-    fclose(f);
 
     // Release memory used by particles, it is not needed anymore
     clean_();

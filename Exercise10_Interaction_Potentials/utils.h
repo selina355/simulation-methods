@@ -36,7 +36,7 @@ void ReadConf(char filename[])
         fscanf(fp, "%lf %lf %lf %lf %lf %lf \n", &a, &b, &c, &d, &e, &f); 
 	    parts[i].x = a; parts[i].y = b; parts[i].z = c;
         parts[i].vx=d; parts[i].vy=e; parts[i].vz=f;
-        printf( "%lf %lf %lf %lf %lf %lf \n", parts[i].x, parts[i].y, parts[i].z,parts[i].vx, parts[i].vy, parts[i].vz); 
+        //printf( "%lf %lf %lf %lf %lf %lf \n", parts[i].x, parts[i].y, parts[i].z,parts[i].vx, parts[i].vy, parts[i].vz); 
     }
     fclose(fp); 
 }
